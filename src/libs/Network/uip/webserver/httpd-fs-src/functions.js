@@ -146,6 +146,25 @@ function playFile(filename) {
   runCommandSilent("play /sd/"+filename);
 }
 
+function removeFile(filename) {
+  runCommandSilent("rm /sd/"+filename);
+  refreshFiles();
+}
+
+function checkResult() {
+  if (result.innerHTML != resContent) {
+    var regexMatch = $("#result").innerHTML.match(/(\d+ s)/g);
+      if(regexMatch.length === 2) {
+        var min1 = Math.round((parseInt(regexMatch[0].match(/\d+/g))/60)*100)/100;
+        var min2 = Math.round((parseInt(regexMatch[1].match(/\d+/g))/60)*100)/100;
+        var hour1 = Math.round((min1/60)*100)/100;
+        var hour2 = Math.round((min2/60)*100)/100;
+        $("#result").innerHTML = $("#result").innerHTML.concat("Elapsed time: ").concat(min1.toString()).concat(" m, estimated time: ").concat(min2.toString()).concat(" m<br/>").concat("Elapsed time: ").concat(hour1.toString()).concat(" h, estimated time: ").concat(hour2.toString()).concat(" h");
+      }
+      resContent = $("#result").innerHTML;
+  }
+}
+
 function refreshFiles() {
   document.getElementById('fileList').innerHTML = '';
   runCommandCallback("M20", function(data){
@@ -159,6 +178,8 @@ function refreshFiles() {
           cell.appendChild(text);
           cell = row.insertCell(1);
           cell.innerHTML = "[<a href='javascript:void(0);' onclick='playFile(\""+item+"\");'>Play</a>]";
+          cell = row.insertCell(2);
+          cell.innerHTML = "[<a href='javascript:void(0);' onclick='removeFile(\""+item+\");'>Remove</a>]";
         }
         //$( "#result" ).append( this + '<br/>' );
       });
